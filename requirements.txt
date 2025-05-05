@@ -1,12 +1,37 @@
+# This file is for specifying the dependencies of your Python project.
+# It is recommended to use a virtual environment to manage your dependencies.
+# Embedding models for semantic search and similarity
 sentence-transformers==2.2.2
+
+# Core LangChain framework for building LLM pipelines
 langchain
+
+# Web framework to serve your app or API
 flask
+
+# PDF reading and text extraction
 pypdf
+
+# Load environment variables from a .env file
 python-dotenv
+
+# Pinecone vector database with high-performance gRPC support
 pinecone[grpc]
+
+# LangChain integration with Pinecone for vector store use
 langchain-pinecone
+
+# Community-maintained integrations and tools for LangChain
 langchain_community
+
+# LangChain integration with Groq-backed LLMs
 langchain[groq]
+
+# LangChain integration for Google Vertex AI (e.g., PaLM, Gemini)
 langchain-google-vertexai
+
+# Experimental and bleeding-edge features in LangChain
 langchain_experimental
+
+# Install your current project in editable mode (for local development)
 -e .
