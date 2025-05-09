@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediChat - Healthcare Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #1e88e5;
+            --primary-light: #e3f2fd;
+            --primary-dark: #0d47a1;
+            --secondary: #26a69a;
+            --text-dark: #333;
+            --text-light: #f5f5f5;
+            --gray-light: #f5f7fa;
+            --gray: #e0e0e0;
+            --success: #66bb6a;
+            --error: #ef5350;
+            --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: #f8fafc;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            height: 100vh;
+        }
+
+        .chatbot-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+        }
+
+        .chatbot-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chatbot-header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .chatbot-logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .chatbot-logo svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary);
+        }
+
+        .chatbot-title h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .chatbot-title p {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .chatbot-header-right svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bot-message {
+            background-color: var(--gray-light);
+            color: var(--text-dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user-message {
+            background-color: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+            display: block;
+            text-align: right;
+        }
+
+        .typing-indicator {
+            display: flex;
+            padding: 12px 16px;
+            background-color: var(--gray-light);
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+            max-width: 100px;
+        }
+
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: var(--text-dark);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            opacity: 0.4;
+            animation: pulse 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+            margin-right: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-reply {
+            background-color: white;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 18px;
+            padding: 8px 14px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-reply:hover {
+            background-color: var(--primary-light);
+        }
+
+        .chatbot-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--gray);
+            background-color: white;
+        }
+
+        .message-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            position: relative;
+        }
+
+        .message-input input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border-radius: 24px;
+            border: 1px solid var(--gray);
+            outline: none;
+            font-size: 15px;
+            transition: border 0.2s;
+        }
+
+        .message-input input:focus {
+            border-color: var(--primary);
+        }
+
+        .message-input button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .message-input button svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-button {
+            background: none;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: var(--gray-light);
+        }
+
+        .action-button svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-dark);
+        }
+
+        /* Healthcare-specific design elements */
+        .health-action {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .health-action:hover {
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .health-action-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .health-action-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary);
+        }
+
+        .health-action-text h3 {
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .health-action-text p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Media Queries */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0;
+            }
+            
+            .chatbot-container {
+                max-width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chatbot-container">
+            <div class="chatbot-header">
+                <div class="chatbot-header-left">
+                    <div class="chatbot-logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 12c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-3-1c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm9 1c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-3-1c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm9 1c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-3-1c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm2 8H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v13c0 1.1-.9 2-2 2zM5 5v13h14V5H5z"/>
+                        </svg>
+                    </div>
+                    <div class="chatbot-title">
+                        <h1>MediChat</h1>
+                        <p>Your Healthcare Assistant</p>
+                    </div>
+                </div>
+                <div class="chatbot-header-right">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    Hello! I'm MediChat, your healthcare assistant. How can I help you today?
+                    <span class="message-time">10:03 AM</span>
+                    
+                </div>
+            </div>
+            
+            <div class="chatbot-footer">
+                <form class="message-form" id="messageForm">
+                    <div class="action-buttons">
+                        <button type="button" class="action-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="message-input">
+                        <input type="text" placeholder="Type your message..." id="messageInput" name="msg">
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // Basic chatbot functionality with Flask backend integration
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageForm = document.getElementById('messageForm');
+            const messageInput = document.getElementById('messageInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const quickReplies = document.querySelectorAll('.quick-reply');
+            
+            // Handle form submission
+            messageForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                if (message) {
+                    // Add user message
+                    addMessage(message, 'user');
+                    messageInput.value = '';
+                    
+                    // Show typing indicator
+                    showTypingIndicator();
+                    
+                    // Send request to Flask backend
+                    $.ajax({
+                        url: '/get',
+                        type: 'POST',
+                        data: {
+                            'msg': message
+                        },
+                        success: function(response) {
+                            // Hide typing indicator and add bot response
+                            hideTypingIndicator();
+                            addMessage(response, 'bot');
+                        },
+                        error: function() {
+                            // Handle error
+                            hideTypingIndicator();
+                            addMessage("I'm sorry, there was an error processing your request. Please try again later.", 'bot');
+                        }
+                    });
+                }
+            });
+            
+            // Handle quick replies
+            quickReplies.forEach(reply => {
+                reply.addEventListener('click', function() {
+                    const message = this.textContent;
+                    addMessage(message, 'user');
+                    
+                    // Show typing indicator
+                    showTypingIndicator();
+                    
+                    // Send request to Flask backend
+                    $.ajax({
+                        url: '/get',
+                        type: 'POST',
+                        data: {
+                            'msg': message
+                        },
+                        success: function(response) {
+                            // Hide typing indicator and add bot response
+                            hideTypingIndicator();
+                            addMessage(response, 'bot');
+                        },
+                        error: function() {
+                            // Handle error
+                            hideTypingIndicator();
+                            addMessage("I'm sorry, there was an error processing your request. Please try again later.", 'bot');
+                        }
+                    });
+                });
+            });
+            
+            // Function to add a message to the chat
+            function addMessage(message, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+                
+                // Get current time
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const formattedHours = (hours % 12) || 12;
+                const timeString = `${formattedHours}:${minutes} ${ampm}`;
+                
+                messageDiv.innerHTML = `
+                    ${message}
+                    <span class="message-time">${timeString}</span>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to show typing indicator
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.classList.add('typing-indicator');
+                typingDiv.id = 'typingIndicator';
+                typingDiv.innerHTML = `
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                `;
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to hide typing indicator
+            function hideTypingIndicator() {
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

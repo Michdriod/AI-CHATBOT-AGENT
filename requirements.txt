@@ -1,6 +1,7 @@
 # This file is for specifying the dependencies of your Python project.
 # It is recommended to use a virtual environment to manage your dependencies.
 # Embedding models for semantic search and similarity
+sentence-transformers
 sentence-transformers==2.2.2
 
 # Core LangChain framework for building LLM pipelines
@@ -35,3 +36,6 @@ langchain_experimental
 
 # Install your current project in editable mode (for local development)
 -e .
+ 
+transformers==4.30.2
+huggingface-hub==0.14.1
