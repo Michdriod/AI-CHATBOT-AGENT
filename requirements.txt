@@ -23,13 +23,12 @@ pinecone[grpc]
 langchain-pinecone
 
 # Community-maintained integrations and tools for LangChain
+langchain-community
 langchain_community
+langchain_core
 
 # LangChain integration with Groq-backed LLMs
 langchain[groq]
-
-# LangChain integration for Google Vertex AI (e.g., PaLM, Gemini)
-langchain-google-vertexai
 
 # Experimental and bleeding-edge features in LangChain
 langchain_experimental
